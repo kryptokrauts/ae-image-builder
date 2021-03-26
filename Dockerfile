@@ -2,8 +2,8 @@ FROM elixir:1.10
 
 # Versions to build the image with
 # IMPORTANT: currently it's also needed to change the tag in the github action manually to push the image with the right tags
-ENV NODE_VERSION="v5.9.1"
-ENV INDAEX_VERSION="1.0.3"
+ENV NODE_VERSION="v5.10.1"
+ENV INDAEX_VERSION="1.0.4"
 
 # Install required dependencies
 RUN apt-get -qq update && apt-get -qq -y install curl libncurses5 libsodium-dev jq build-essential gcc g++ make libgmp10 \
