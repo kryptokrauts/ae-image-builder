@@ -2,7 +2,7 @@ FROM elixir:1.10
 
 # Versions to build the image with
 # IMPORTANT: currently it's also needed to change the tag in the github action manually to push the image with the right tags
-ENV NODE_VERSION="v6.0.0-rc4"
+ENV NODE_VERSION="v6.0.0"
 ENV INDAEX_VERSION="1.0.6"
 
 # Install required dependencies
