@@ -22,4 +22,4 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: kryptokrauts/aeternity:node-v6.1.0_indaex-v1.0.7
+          tags: kryptokrauts/aeternity:node-v6.1.0_indaex-v1.0.8
