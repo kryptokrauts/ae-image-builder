@@ -2,8 +2,8 @@ FROM elixir:1.10
 
 # Versions to build the image with
 # IMPORTANT: currently it's also needed to change the tag in the github action manually to push the image with the right tags
-ENV NODE_VERSION="v6.1.0"
-ENV INDAEX_VERSION="1.0.8"
+ENV NODE_VERSION="v6.2.0"
+ENV MDW_VERSION="1.0.9"
 
 # Install required dependencies
 RUN apt-get -qq update && apt-get -qq -y install curl libncurses5 libsodium-dev jq build-essential gcc g++ make libgmp10 \
@@ -24,28 +24,28 @@ RUN curl -s https://api.github.com/repos/aeternity/aeternity/releases/tags/${NOD
 RUN chmod +x ${NODEDIR}/bin/aeternity
 RUN cp -r ./local/rel/aeternity/lib local/
 
-# Download the indaex release and copy files needed to build the project
-RUN mkdir /tmp-indaex
-RUN curl -s https://api.github.com/repos/aeternity/ae_mdw/releases/tags/${INDAEX_VERSION} | \
+# Download the mdw release and copy files needed to build the project
+RUN mkdir /tmp-mdw
+RUN curl -s https://api.github.com/repos/aeternity/ae_mdw/releases/tags/${MDW_VERSION} | \
        jq '.tarball_url' | \
-       xargs curl -L --output indaex.tar.gz  && tar -C /tmp-indaex -xf indaex.tar.gz 
+       xargs curl -L --output mdw.tar.gz  && tar -C /tmp-mdw -xf mdw.tar.gz 
 
 RUN mkdir ae_mdw
 
 # Copy all files, needed to build the project
-RUN cp -r /tmp-indaex/*/config ./ae_mdw/config
-RUN cp -r /tmp-indaex/*/lib ./ae_mdw/lib
-RUN cp -r /tmp-indaex/*/mix.exs ./ae_mdw
-RUN cp -r /tmp-indaex/*/mix.lock ./ae_mdw
-RUN cp -r /tmp-indaex/*/Makefile ./ae_mdw
+RUN cp -r /tmp-mdw/*/config ./ae_mdw/config
+RUN cp -r /tmp-mdw/*/lib ./ae_mdw/lib
+RUN cp -r /tmp-mdw/*/mix.exs ./ae_mdw
+RUN cp -r /tmp-mdw/*/mix.lock ./ae_mdw
+RUN cp -r /tmp-mdw/*/Makefile ./ae_mdw
 COPY entrypoint.sh ae_mdw/entrypoint.sh
 
 # Remove tmp files and folders
 RUN rm aeternity.tar.gz
-RUN rm indaex.tar.gz
-RUN rm -rf /tmp-indaex
+RUN rm mdw.tar.gz
+RUN rm -rf /tmp-mdw
 
-# Start building indaex
+# Start building mdw
 WORKDIR /home/aeternity/node/ae_mdw
 RUN  mix local.hex --force && mix local.rebar --force
 
