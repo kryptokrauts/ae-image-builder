@@ -1,9 +1,9 @@
-FROM elixir:1.10
+FROM elixir:1.10.4
 
 # Versions to build the image with
 # IMPORTANT: currently it's also needed to change the tag in the github action manually to push the image with the right tags
-ENV NODE_VERSION="v6.2.0"
-ENV MDW_VERSION="1.0.9"
+ENV NODE_VERSION="v6.3.0"
+ENV MDW_VERSION="v1.3.0"
 
 # Install required dependencies
 RUN apt-get -qq update && apt-get -qq -y install curl libncurses5 libsodium-dev jq build-essential gcc g++ make libgmp10 \
@@ -18,8 +18,8 @@ WORKDIR /home/aeternity/node
 ENV NODEDIR=/home/aeternity/node/local/rel/aeternity
 RUN mkdir -p ./local/rel/aeternity/data/mnesia
 RUN curl -s https://api.github.com/repos/aeternity/aeternity/releases/tags/${NODE_VERSION} | \
-       jq '.assets[1].browser_download_url' | \
-       xargs curl -L --output aeternity.tar.gz  && tar -C ./local/rel/aeternity -xf aeternity.tar.gz
+       jq '.assets[] | .browser_download_url | select(contains("ubuntu-x86_64.tar.gz"))' | \
+       xargs curl -L --output aeternity.tar.gz && tar -C ./local/rel/aeternity -xf aeternity.tar.gz
 
 RUN chmod +x ${NODEDIR}/bin/aeternity
 RUN cp -r ./local/rel/aeternity/lib local/
@@ -28,7 +28,7 @@ RUN cp -r ./local/rel/aeternity/lib local/
 RUN mkdir /tmp-mdw
 RUN curl -s https://api.github.com/repos/aeternity/ae_mdw/releases/tags/${MDW_VERSION} | \
        jq '.tarball_url' | \
-       xargs curl -L --output mdw.tar.gz  && tar -C /tmp-mdw -xf mdw.tar.gz 
+       xargs curl -L --output mdw.tar.gz && tar -C /tmp-mdw -xf mdw.tar.gz 
 
 RUN mkdir ae_mdw
 
@@ -47,7 +47,7 @@ RUN rm -rf /tmp-mdw
 
 # Start building mdw
 WORKDIR /home/aeternity/node/ae_mdw
-RUN  mix local.hex --force && mix local.rebar --force
+RUN mix local.hex --force && mix local.rebar --force
 
 # Fetch the application dependencies and build it
 RUN mix deps.get
